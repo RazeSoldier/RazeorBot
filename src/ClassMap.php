@@ -21,6 +21,7 @@
 return [
     'Config' => 'Config',
     'DI\RazeorService' => 'DI/RazeorService',
+    'IChecker' => 'IChecker',
     'IFactory' => 'IFactory',
     'Kernel' => 'Kernel',
     'Mode\AbstractMode' => 'Mode/AbstractMode',
@@ -30,4 +31,7 @@ return [
     'Mode\MultiProcessMode' => 'Mode/MultiProcessMode',
     'Mode\SingleProcessMode' => 'Mode/SingleProcessMode',
     'ShellOutput' => 'ShellOutput',
+    'Task\TaskInfoFileChecker' => 'Task/TaskInfoFileChecker',
+    'Task\TaskList' => 'Task/TaskList',
+    'Task\TaskManager' => 'Task/TaskManager',
 ];

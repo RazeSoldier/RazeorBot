@@ -50,7 +50,6 @@ class TaskInfoFileChecker implements IChecker
             $errMsg = json_last_error_msg();
             throw new \RuntimeException( "Failed to decode the json: $errMsg" );
         }
-
-
+        // TODO
     }
 }
