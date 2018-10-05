@@ -1,0 +1,18 @@
+# IDE
+## NetBeans IDE
+/nbproject/*
+
+## PhpStrom IDE
+/.idea
+
+# Composer
+/vendor
+/composer.lock
+/composer.local.json
+/composer.phar
+
+# Task resource
+/tasks/*
+
+# Config file
+/config.php
