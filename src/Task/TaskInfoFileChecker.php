@@ -18,24 +18,39 @@
  * @copyright
  */
 
-namespace Razeor\Mode;
+namespace Razeor\Task;
 
-use Razeor\Task\TaskManager;
+use Razeor\IChecker;
 
 /**
- * All Mode concrete classes must extend this abstract class
- * @package Razeor\Mode
+ * Used to check a task info file
+ * @package Razeor\Task
  */
-abstract class AbstractMode implements IMode
+class TaskInfoFileChecker implements IChecker
 {
+    public const REQUIRE_KEY = [ 'MainClass', 'Time' ];
     /**
-     * @var TaskManager
+     * @var string
      */
-    protected $taskManager;
+    private $filePath;
 
-    public function __construct()
+    public function __construct(string $filePath)
     {
-        $this->taskManager = TaskManager::getInstance();
-        // TODO
+        if ( !is_readable( $filePath ) ) {
+            throw new \RuntimeException( "Failed to read $filePath" );
+        }
+        $this->filePath = $filePath;
+    }
+
+    public function check() : bool
+    {
+        $json = file_get_contents( $this->filePath );
+        $arr = json_decode( $json, true );
+        if ( $arr === null ) {
+            $errMsg = json_last_error_msg();
+            throw new \RuntimeException( "Failed to decode the json: $errMsg" );
+        }
+
+
     }
 }

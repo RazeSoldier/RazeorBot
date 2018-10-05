@@ -18,24 +18,16 @@
  * @copyright
  */
 
-namespace Razeor\Mode;
-
-use Razeor\Task\TaskManager;
+namespace Razeor;
 
 /**
- * All Mode concrete classes must extend this abstract class
- * @package Razeor\Mode
+ * All checkers must implements this interface
+ * @package Razeor
  */
-abstract class AbstractMode implements IMode
+interface IChecker
 {
     /**
-     * @var TaskManager
+     * @return bool Returns check result
      */
-    protected $taskManager;
-
-    public function __construct()
-    {
-        $this->taskManager = TaskManager::getInstance();
-        // TODO
-    }
+    public function check() : bool;
 }

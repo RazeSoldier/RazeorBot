@@ -18,24 +18,39 @@
  * @copyright
  */
 
-namespace Razeor\Mode;
-
-use Razeor\Task\TaskManager;
+namespace Razeor\Task;
 
 /**
- * All Mode concrete classes must extend this abstract class
- * @package Razeor\Mode
+ * Manage all valid tasks
+ * @package Razeor\Task
  */
-abstract class AbstractMode implements IMode
+final class TaskManager
 {
     /**
      * @var TaskManager
      */
-    protected $taskManager;
+    private static $instance;
 
-    public function __construct()
+    /**
+     * @var TaskList
+     */
+    private $taskList;
+
+    private function __construct()
     {
-        $this->taskManager = TaskManager::getInstance();
-        // TODO
+        $this->taskList = TaskList::getInstance();
+    }
+
+    public static function getInstance() : TaskManager
+    {
+        if ( self::$instance === null ) {
+            self::$instance = new self;
+        }
+        return self::$instance;
+    }
+
+    public function syncTaskList() : void
+    {
+        $this->taskList->sync();
     }
 }
