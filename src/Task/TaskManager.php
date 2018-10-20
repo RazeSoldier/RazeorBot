@@ -20,6 +20,7 @@
 
 namespace Razeor\Task;
 
+
 /**
  * Manage all valid tasks
  * @package Razeor\Task
@@ -52,5 +53,24 @@ final class TaskManager
     public function syncTaskList() : void
     {
         $this->taskList->sync();
+    }
+
+    /**
+     * Get upcoming task names
+     * @return string[]|null
+     */
+    public function getUpcomingTasks(int $currentTime, $timeLimit = 100) :? array
+    {
+        $upcomingTask = [];
+        foreach ( $this->taskList as $taskName => $taskInfo ) {
+            $time = $taskInfo['time'];
+            if ( $time < $currentTime ) {
+                continue;
+            }
+            if ( $time < $currentTime + $timeLimit ) {
+                $upcomingTask[$taskName] = $time;
+            }
+        }
+        return $upcomingTask;
     }
 }

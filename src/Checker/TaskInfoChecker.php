@@ -18,16 +18,42 @@
  * @copyright
  */
 
-namespace Razeor;
+namespace Razeor\Checker;
 
 /**
- * All checkers must implements this interface
- * @package Razeor
+ * Used to check a task info
+ * @package Razeor\Checker
  */
-interface IChecker
+class TaskInfoChecker implements IChecker
 {
-    /**
-     * @return bool Returns check result
-     */
-    public function check() : bool;
+    public const REQUIRE_KEY = [ 'MainClass' => 'string', 'Time' => 'Date' ];
+
+    private $info;
+
+    public function __construct(array $info)
+    {
+        $this->info = $info;
+    }
+
+    public function check() : bool
+    {
+        if ( !$this->checkInfoStructure() ) {
+            return false;
+        }
+        if ( !$this->checkInfoValid() ) {
+            return false;
+        }
+        return true;
+    }
+
+    private function checkInfoStructure() : bool
+    {
+        $checker = new ArrayMatchChecker( $this->info, array_keys( self::REQUIRE_KEY ) );
+        return $checker->check();
+    }
+
+    private function checkInfoValid() : bool
+    {
+        // TODO
+    }
 }

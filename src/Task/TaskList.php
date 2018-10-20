@@ -20,20 +20,30 @@
 
 namespace Razeor\Task;
 
-use PhpParser\Node\Expr\ConstFetch;
+use Razeor\Checker\ArrayMatchChecker;
+use Razeor\Checker\TaskInfoChecker;
 use Razeor\Config;
+use Razeor\JsonParser;
 use Razeor\ShellOutput;
 
 /**
  * Used to storage all valid tasks
  * The instance is managed by TaskManager
+ *
+ * The instance can pass to foreach(), the key is a task name,
+ * the value is a task information, includes 'mainClass' and 'time'
  * @package Razeor\Task
  */
-final class TaskList
+final class TaskList implements \Iterator
 {
     public const DEFAULT_DIR = ROOT_PATH . '/tasks';
 
     public const TASK_INFO_FILENAME = 'task.json';
+
+    /**
+     * @var \ArrayIterator
+     */
+    private $listIterator;
 
     /**
      * @var TaskList
@@ -77,22 +87,67 @@ final class TaskList
         return self::$instance;
     }
 
+    public function rewind() : void
+    {
+        $this->listIterator->rewind();
+    }
+
+    public function current()
+    {
+        return $this->listIterator->current();
+    }
+
+    public function key()
+    {
+        return $this->listIterator->key();
+    }
+
+    public function next() : void
+    {
+        $this->listIterator->next();
+    }
+
+    public function valid() : bool
+    {
+        return $this->listIterator->valid();
+    }
+
     private function readTasks() : void
     {
         $dir = new \DirectoryIterator( $this->storageDir );
         foreach ( $dir as $fileInfo ) {
             if ( !$fileInfo->isDot() && $fileInfo->isDir() ) {
                 try {
-                    $checker = new TaskInfoFileChecker( $dir->getRealPath() . '/' . self::TASK_INFO_FILENAME );
-                    if ( $checker->check() ) {
-
+                    $taskName = $fileInfo->getFilename();
+                    $filePath = $dir->getRealPath() . '/' . self::TASK_INFO_FILENAME;
+                    if ( !is_readable( $filePath ) ) {
+                        throw new \RuntimeException( "Failed to read $filePath" );
+                    }
+                    $jsonParser = new JsonParser( file_get_contents( $filePath ) );
+                    if ( $jsonParser->parse() ) {
+                        $json = $jsonParser->getOutput();
+                        $checker = new TaskInfoChecker( $json );
+                        if ( $checker->check() ) {
+                            if ( !is_readable( $mainFilePath = "{$dir->getRealPath()}/{$json['MainClass']}.php" ) ) {
+                                throw new \RuntimeException( "Failed to read {$mainFilePath}" );
+                            }
+                            $this->list[$taskName] = [
+                                'mainClass' => $json['MainClass'],
+                                'time' => $json['Time']
+                            ];
+                        } else {
+                            throw new \RuntimeException( 'info file missing some required option' );
+                        }
+                    } else {
+                        throw new \RuntimeException( "Failed to decode the json: {$jsonParser->getErrorMsg()}" );
                     }
                 } catch ( \RuntimeException $e ) {
-                    ShellOutput::println( "Ignore {$fileInfo->getFilename()}, reason: {$e->getMessage()}",
+                    ShellOutput::println( "Ignore $taskName, reason: {$e->getMessage()}",
                         ShellOutput::YELLOW );
                 }
             }
         }
+        $this->listIterator = new \ArrayIterator( $this->list );
     }
 
     /**

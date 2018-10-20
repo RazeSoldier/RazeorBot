@@ -18,29 +18,27 @@
  * @copyright
  */
 
-namespace Razeor\Mode;
+namespace Razeor\Checker;
 
-/**
- * A running mode that only using single-process to handle tasks
- * @package Razeor\Mode
- */
-class SingleProcessMode extends AbstractMode
+class ArrayMatchChecker implements IChecker
 {
-    public function __construct()
-    {
-        parent::__construct();
+    private $input;
 
+    private $requires;
+
+    public function __construct(array $arr, array $requires)
+    {
+        $this->input = $arr;
+        $this->requires = $requires;
     }
 
-    public function run()
+    public function check() : bool
     {
-        $currentTime = time();
-        $upcoming = $this->taskManager->getUpcomingTasks( $currentTime );
-        // TODO
-    }
-
-    private function syncTaskList()
-    {
-        $this->taskManager->syncTaskList();
+        foreach ( $this->requires as $require ) {
+            if ( !array_key_exists( $require, $this->input ) ) {
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -18,38 +18,16 @@
  * @copyright
  */
 
-namespace Razeor\Task;
-
-use Razeor\IChecker;
+namespace Razeor\Checker;
 
 /**
- * Used to check a task info file
- * @package Razeor\Task
+ * All checkers must implements this interface
+ * @package Razeor
  */
-class TaskInfoFileChecker implements IChecker
+interface IChecker
 {
-    public const REQUIRE_KEY = [ 'MainClass', 'Time' ];
     /**
-     * @var string
+     * @return bool Returns check result
      */
-    private $filePath;
-
-    public function __construct(string $filePath)
-    {
-        if ( !is_readable( $filePath ) ) {
-            throw new \RuntimeException( "Failed to read $filePath" );
-        }
-        $this->filePath = $filePath;
-    }
-
-    public function check() : bool
-    {
-        $json = file_get_contents( $this->filePath );
-        $arr = json_decode( $json, true );
-        if ( $arr === null ) {
-            $errMsg = json_last_error_msg();
-            throw new \RuntimeException( "Failed to decode the json: $errMsg" );
-        }
-        // TODO
-    }
+    public function check() : bool;
 }
