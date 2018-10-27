@@ -54,6 +54,7 @@ class TaskInfoChecker implements IChecker
 
     private function checkInfoValid() : bool
     {
-        // TODO
+        $checker = new TypeMatchChecker( $this->info, self::REQUIRE_KEY );
+        return $checker->check();
     }
 }

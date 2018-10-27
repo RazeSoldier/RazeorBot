@@ -55,15 +55,31 @@ class TypeMatchChecker implements IChecker
     public function check() : bool
     {
         if ( is_array( $this->data ) ) {
-
+            foreach ( $this->expect as $key => $requireType ) {
+                if ( is_array( $requireType ) ) {
+                    // TODO
+                } else {
+                    if ( array_key_exists( $key, $this->data ) ) {
+                        if ( !$this->checkType( $requireType, $this->data[$key] ) ) {
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }
+                }
+            }
         } else {
-            $checker = $this->getChecker( $this->expect );
-            // TODO
+            return $this->checkType( $this->expect, $this->data );
         }
     }
 
-    private function getChecker(string $type) : string
+    private function checkType(string $type, $value) : bool
     {
-        // TODO
+        switch ( $type ) {
+            case 'string':
+                return is_string( $value );
+            default:
+                throw new \LogicException( "Unknown type: $type" );
+        }
     }
 }
