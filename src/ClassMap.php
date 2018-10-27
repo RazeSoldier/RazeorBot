@@ -19,9 +19,14 @@
  */
 
 return [
+    'Checker\ArrayMatchChecker' => 'Checker/ArrayMatchChecker',
+    'Checker\IChecker' => 'Checker/IChecker',
+    'Checker\TaskInfoChecker' => 'Checker/TaskInfoChecker',
+    'Checker\TypeMatchChecker' => 'Checker/TypeMatchChecker',
     'Config' => 'Config',
     'DI\RazeorService' => 'DI/RazeorService',
     'IFactory' => 'IFactory',
+    'JsonParser' => 'JsonParser',
     'Kernel' => 'Kernel',
     'Mode\AbstractMode' => 'Mode/AbstractMode',
     'Mode\OneTaskMode' => 'Mode/OneTaskMode',
@@ -30,4 +35,6 @@ return [
     'Mode\MultiProcessMode' => 'Mode/MultiProcessMode',
     'Mode\SingleProcessMode' => 'Mode/SingleProcessMode',
     'ShellOutput' => 'ShellOutput',
+    'Task\TaskList' => 'Task/TaskList',
+    'Task\TaskManager' => 'Task/TaskManager',
 ];

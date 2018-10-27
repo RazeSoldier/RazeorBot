@@ -18,24 +18,27 @@
  * @copyright
  */
 
-namespace Razeor\Mode;
+namespace Razeor\Checker;
 
-use Razeor\Task\TaskManager;
-
-/**
- * All Mode concrete classes must extend this abstract class
- * @package Razeor\Mode
- */
-abstract class AbstractMode implements IMode
+class ArrayMatchChecker implements IChecker
 {
-    /**
-     * @var TaskManager
-     */
-    protected $taskManager;
+    private $input;
 
-    public function __construct()
+    private $requires;
+
+    public function __construct(array $arr, array $requires)
     {
-        $this->taskManager = TaskManager::getInstance();
-        // TODO
+        $this->input = $arr;
+        $this->requires = $requires;
+    }
+
+    public function check() : bool
+    {
+        foreach ( $this->requires as $require ) {
+            if ( !array_key_exists( $require, $this->input ) ) {
+                return false;
+            }
+        }
+        return true;
     }
 }
