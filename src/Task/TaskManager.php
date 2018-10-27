@@ -57,11 +57,16 @@ final class TaskManager
 
     /**
      * Get upcoming task names
+     * @param float $currentTime
+     * @param float $timeLimit
      * @return string[]|null
      */
-    public function getUpcomingTasks(int $currentTime, $timeLimit = 100) :? array
+    public function getUpcomingTasks(float $currentTime, float $timeLimit = 100) :? array
     {
-        $upcomingTask = [];
+        $upcomingTask = null;
+        if ( $this->taskList->listIsEmpty() ) {
+            return $upcomingTask;
+        }
         foreach ( $this->taskList as $taskName => $taskInfo ) {
             $time = $taskInfo['time'];
             if ( $time < $currentTime ) {
@@ -71,6 +76,17 @@ final class TaskManager
                 $upcomingTask[$taskName] = $time;
             }
         }
+        if ( is_array( $upcomingTask ) ) {
+            asort( $upcomingTask );
+        }
         return $upcomingTask;
+    }
+
+    public function runTask(string $taskName)
+    {
+        require_once $this->taskList->getMainClassFile( $taskName );
+        /** @var object $main */
+        $main = $this->taskList->getMainClass( $taskName );
+        $main::run();
     }
 }

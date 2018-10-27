@@ -26,7 +26,7 @@ namespace Razeor\Checker;
  */
 class TaskInfoChecker implements IChecker
 {
-    public const REQUIRE_KEY = [ 'MainClass' => 'string', 'Time' => 'Date' ];
+    public const REQUIRE_KEY = [ 'MainClass' => 'string', 'Time' => 'date' ];
 
     private $info;
 

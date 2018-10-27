@@ -20,6 +20,7 @@
 
 namespace Razeor\Task;
 
+use http\Exception\RuntimeException;
 use Razeor\Checker\ArrayMatchChecker;
 use Razeor\Checker\TaskInfoChecker;
 use Razeor\Config;
@@ -41,7 +42,7 @@ final class TaskList implements \Iterator
     public const TASK_INFO_FILENAME = 'task.json';
 
     /**
-     * @var \ArrayIterator
+     * @var \ArrayIterator|null
      */
     private $listIterator;
 
@@ -112,8 +113,14 @@ final class TaskList implements \Iterator
         return $this->listIterator->valid();
     }
 
+    public function listIsEmpty() : bool
+    {
+        return $this->list === null;
+    }
+
     private function readTasks() : void
     {
+        $this->list = null;
         $dir = new \DirectoryIterator( $this->storageDir );
         foreach ( $dir as $fileInfo ) {
             if ( !$fileInfo->isDot() && $fileInfo->isDir() ) {
@@ -133,7 +140,7 @@ final class TaskList implements \Iterator
                             }
                             $this->list[$taskName] = [
                                 'mainClass' => $json['MainClass'],
-                                'time' => $json['Time']
+                                'time' => ( new \DateTime( $json['Time'] ) )->format( 'U' )
                             ];
                         } else {
                             throw new \RuntimeException( 'info file missing some required option' );
@@ -147,7 +154,11 @@ final class TaskList implements \Iterator
                 }
             }
         }
-        $this->listIterator = new \ArrayIterator( $this->list );
+        if ( $this->list === null ) {
+            $this->listIterator = null;
+        } else {
+            $this->listIterator = new \ArrayIterator( $this->list );
+        }
     }
 
     /**
@@ -156,5 +167,28 @@ final class TaskList implements \Iterator
     public function sync() : void
     {
         $this->readTasks();
+    }
+
+    /**
+     * Get the main file of a task
+     * @param string $taskName
+     * @return string
+     */
+    public function getMainClassFile(string $taskName) : string
+    {
+        if ( isset( $this->list[$taskName] ) ) {
+            return "{$this->storageDir}/$taskName/{$this->list[$taskName]['mainClass']}.php";
+        } else {
+            throw new \RuntimeException( "Undefined task: $taskName" );
+        }
+    }
+
+    public function getMainClass(string $taskName) : string
+    {
+        if ( isset( $this->list[$taskName] ) ) {
+            return $this->list[$taskName]['mainClass'];
+        } else {
+            throw new \RuntimeException( "Undefined task: $taskName" );
+        }
     }
 }

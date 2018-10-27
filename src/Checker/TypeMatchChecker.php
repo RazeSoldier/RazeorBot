@@ -68,6 +68,7 @@ class TypeMatchChecker implements IChecker
                     }
                 }
             }
+            return true;
         } else {
             return $this->checkType( $this->expect, $this->data );
         }
@@ -78,6 +79,13 @@ class TypeMatchChecker implements IChecker
         switch ( $type ) {
             case 'string':
                 return is_string( $value );
+            case 'date':
+                try {
+                    $time = new \DateTime( $value );
+                } catch ( \Exception $e ) {
+                    return false;
+                }
+                return true;
             default:
                 throw new \LogicException( "Unknown type: $type" );
         }
