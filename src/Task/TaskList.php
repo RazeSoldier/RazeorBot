@@ -139,7 +139,7 @@ final class TaskList implements \Iterator, \Countable
                         $checker = new TaskInfoChecker( $json );
                         if ( $checker->check() ) {
                             // If the start time is later than the current time, skip
-                            if ( $time = ( new \DateTime( $json['Time'] ) )->format( 'U' ) < microtime( true ) ) {
+                            if ( ( $time = ( new \DateTime( $json['Time'] ) )->format( 'U' ) ) < microtime( true ) ) {
                                 continue;
                             }
                             if ( !is_readable( $mainFilePath = "{$dir->getRealPath()}/{$json['MainClass']}.php" ) ) {
@@ -164,6 +164,15 @@ final class TaskList implements \Iterator, \Countable
         if ( $this->list === [] ) {
             $this->listIterator = null;
         } else {
+            // Sort by time from small to large
+            uasort( $this->list, function ( $a, $b ) {
+                $a = $a['time'];
+                $b = $b['time'];
+                if ( $a === $b ) {
+                    return 0;
+                }
+                return ( $a < $b ) ? -1 : 1;
+            } );
             $this->listIterator = new \ArrayIterator( $this->list );
         }
     }
