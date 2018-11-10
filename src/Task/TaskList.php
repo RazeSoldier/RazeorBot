@@ -138,12 +138,16 @@ final class TaskList implements \Iterator, \Countable
                         $json = $jsonParser->getOutput();
                         $checker = new TaskInfoChecker( $json );
                         if ( $checker->check() ) {
+                            // If the start time is later than the current time, skip
+                            if ( $time = ( new \DateTime( $json['Time'] ) )->format( 'U' ) < microtime( true ) ) {
+                                continue;
+                            }
                             if ( !is_readable( $mainFilePath = "{$dir->getRealPath()}/{$json['MainClass']}.php" ) ) {
                                 throw new \RuntimeException( "Failed to read {$mainFilePath}" );
                             }
                             $this->list[$taskName] = [
                                 'mainClass' => $json['MainClass'],
-                                'time' => ( new \DateTime( $json['Time'] ) )->format( 'U' )
+                                'time' => $time
                             ];
                         } else {
                             throw new \RuntimeException( 'info file missing some required option' );
