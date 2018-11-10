@@ -20,11 +20,21 @@
 
 namespace Razeor\Mode;
 
+use Razeor\Logger;
+
+/**
+ * A running mode that only run a task
+ * @package Razeor\Mode
+ */
 class OneTaskMode extends AbstractMode
 {
-    // TODO
     public function run()
     {
-        // TODO: Implement run() method.
+        if ( ( $task = $this->taskManager->getRecentTask() ) === null ) {
+            Logger::getInstance()->warning( 'Task list is empty' );
+            return;
+        }
+        time_sleep_until( $task['time'] );
+        $this->taskManager->runTask( $task['name'] );
     }
 }
