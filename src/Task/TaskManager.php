@@ -57,6 +57,24 @@ final class TaskManager
     }
 
     /**
+     * Get the name and the time of the recent task
+     * @return string[]|null Returns NULL, if Task list is empty. Or returns an array, includes following keys:
+     *  - name task name
+     *  - time task start time
+     */
+    public function getRecentTask() :?array
+    {
+        if ( $this->taskList->listIsEmpty() ) {
+            return null;
+        }
+        $this->taskList->rewind();
+        return [
+            'name' => $this->taskList->key(),
+            'time' => $this->taskList->current()['time']
+        ];
+    }
+
+    /**
      * Get upcoming task names
      * @param float $currentTime
      * @param float $timeLimit
