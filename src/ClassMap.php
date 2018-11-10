@@ -25,6 +25,7 @@ return [
     'Checker\TypeMatchChecker' => 'Checker/TypeMatchChecker',
     'Config' => 'Config',
     'DI\RazeorService' => 'DI/RazeorService',
+    'ExceptionHandler' => 'ExceptionHandler',
     'IFactory' => 'IFactory',
     'JsonParser' => 'JsonParser',
     'Kernel' => 'Kernel',

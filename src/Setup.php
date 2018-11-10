@@ -43,3 +43,8 @@ if ( !is_readable( $vendorDir = ROOT_PATH . '/vendor/autoload.php' ) ) {
     throw new Error( 'You missing depend' );
 }
 require_once $vendorDir;
+
+set_error_handler( function ($errno, $errstr, $errfile, $errline) {
+    throw new ErrorException( $errstr, 0, $errno, $errfile, $errline );
+} );
+set_exception_handler( [ Razeor\ExceptionHandler::class, 'handle' ] );
