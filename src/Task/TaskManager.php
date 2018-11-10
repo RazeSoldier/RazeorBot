@@ -20,6 +20,7 @@
 
 namespace Razeor\Task;
 
+use Razeor\Logger;
 
 /**
  * Manage all valid tasks
@@ -84,9 +85,14 @@ final class TaskManager
 
     public function runTask(string $taskName)
     {
+        $startTime = microtime( true );
+        Logger::getInstance()->notice( "'$taskName' task start" );
         require_once $this->taskList->getMainClassFile( $taskName );
         /** @var object $main */
         $main = $this->taskList->getMainClass( $taskName );
         $main::run();
+        $endTime = microtime( true );
+        $duration = $endTime - $startTime;
+        Logger::getInstance()->notice( "'$taskName' task finished, duration: $duration s" );
     }
 }

@@ -32,11 +32,17 @@ class Kernel
 
     public function __construct()
     {
+        Logger::getInstance()->notice( 'Razeor started, mode: ' . Config::getInstance()->get( 'RunningMode' ) );
         $this->mode = RazeorService::getInstance()->get( 'Mode' );
     }
 
     public function run()
     {
         $this->mode->run();
+    }
+
+    public function __destruct()
+    {
+        Logger::getInstance()->notice( 'Razeor stop' );
     }
 }
