@@ -18,20 +18,34 @@
  * @copyright
  */
 
-use function DI\{
-    create,
-    factory,
-    get,
-};
+namespace Razeor\Test;
 
-return [
-    'LineFormatter' => create( Monolog\Formatter\LineFormatter::class )
-        ->constructor( "[%datetime%] (%level_name%) > %message%\n",
-            'Y-m-d H:i:s:u' ),
-    'Logger' => create( Monolog\Logger::class )->constructor( 'Main' )
-        ->method( 'pushHandler', get( 'StreamHandler' ) ),
-    'Mode' => factory( [ \Razeor\Mode\ModeFactory::class, 'make' ] ),
-    'StreamHandler' => create( Monolog\Handler\StreamHandler::class )
-        ->constructor( ROOT_PATH . '/razeor.log' )
-        ->method( 'setFormatter', get( 'LineFormatter' ) ),
-];
+use Razeor\Logger;
+use PHPUnit\Framework\TestCase;
+
+class LoggerTest extends TestCase
+{
+    /**
+     * @var Logger
+     */
+    private $logger;
+
+    protected function setUp()
+    {
+        $this->logger = Logger::getInstance();
+    }
+
+    public function testNotice()
+    {
+        $this->logger->notice( 'This is a test' );
+        $file = file_get_contents( ROOT_PATH . '/razeor.log' );
+        $result = strpos( $file, "This is a test\n" ) !== false ? true: false;
+        $this->assertTrue( $result );
+    }
+
+    protected function tearDown()
+    {
+        $this->logger->close();
+        unlink( ROOT_PATH . '/razeor.log' );
+    }
+}

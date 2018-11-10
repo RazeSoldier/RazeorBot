@@ -18,20 +18,22 @@
  * @copyright
  */
 
-use function DI\{
-    create,
-    factory,
-    get,
-};
+define( 'PHPUNIT_TEST', true );
 
-return [
-    'LineFormatter' => create( Monolog\Formatter\LineFormatter::class )
-        ->constructor( "[%datetime%] (%level_name%) > %message%\n",
-            'Y-m-d H:i:s:u' ),
-    'Logger' => create( Monolog\Logger::class )->constructor( 'Main' )
-        ->method( 'pushHandler', get( 'StreamHandler' ) ),
-    'Mode' => factory( [ \Razeor\Mode\ModeFactory::class, 'make' ] ),
-    'StreamHandler' => create( Monolog\Handler\StreamHandler::class )
-        ->constructor( ROOT_PATH . '/razeor.log' )
-        ->method( 'setFormatter', get( 'LineFormatter' ) ),
-];
+require_once dirname( __DIR__ ) . '/src/Setup.php';
+
+$phpUnitClass = 'PHPUnit\TextUI\Command';
+if ( !class_exists( 'PHPUnit\\Framework\\TestCase' ) ) {
+    echo "PHPUnit not found. Please install it and other dev dependencies by running `"
+        . "composer install` in DBBT root directory.\n";
+    die ( 1 );
+}
+if ( !class_exists( $phpUnitClass ) ) {
+    echo "PHPUnit entry point '" . $phpUnitClass . "' not found. Please make sure you installed "
+        . "the containing component and check the spelling of the class name.\n";
+    die ( 1 );
+}
+
+$_SERVER['argv'][] = '-c' . __DIR__ . '/phpunit.xml';
+
+$phpUnitClass::main();

@@ -28,6 +28,7 @@ return [
     'IFactory' => 'IFactory',
     'JsonParser' => 'JsonParser',
     'Kernel' => 'Kernel',
+    'Logger' => 'Logger',
     'Mode\AbstractMode' => 'Mode/AbstractMode',
     'Mode\OneTaskMode' => 'Mode/OneTaskMode',
     'Mode\IMode' => 'Mode/IMode',
