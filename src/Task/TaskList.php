@@ -20,8 +20,6 @@
 
 namespace Razeor\Task;
 
-use http\Exception\RuntimeException;
-use Razeor\Checker\ArrayMatchChecker;
 use Razeor\Checker\TaskInfoChecker;
 use Razeor\Config;
 use Razeor\JsonParser;
@@ -35,7 +33,7 @@ use Razeor\ShellOutput;
  * the value is a task information, includes 'mainClass' and 'time'
  * @package Razeor\Task
  */
-final class TaskList implements \Iterator
+final class TaskList implements \Iterator, \Countable
 {
     public const DEFAULT_DIR = ROOT_PATH . '/tasks';
 
@@ -113,14 +111,19 @@ final class TaskList implements \Iterator
         return $this->listIterator->valid();
     }
 
+    public function count() : int
+    {
+        return count( $this->list );
+    }
+
     public function listIsEmpty() : bool
     {
-        return $this->list === null;
+        return $this->count() === 0 ? true : false;
     }
 
     private function readTasks() : void
     {
-        $this->list = null;
+        $this->list = [];
         $dir = new \DirectoryIterator( $this->storageDir );
         foreach ( $dir as $fileInfo ) {
             if ( !$fileInfo->isDot() && $fileInfo->isDir() ) {
@@ -154,7 +157,7 @@ final class TaskList implements \Iterator
                 }
             }
         }
-        if ( $this->list === null ) {
+        if ( $this->list === [] ) {
             $this->listIterator = null;
         } else {
             $this->listIterator = new \ArrayIterator( $this->list );
