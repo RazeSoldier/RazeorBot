@@ -61,7 +61,6 @@ class MultiProcessMode extends MultiTaskMode
             time_sleep_until( current( $upcomingTask ) );
 
             // Run upcoming task
-            //$this->taskManager->runTask( key( $upcomingTask ) );
             $this->runTask( key( $upcomingTask ) );
 
             # Process the tasks in the queue @{
