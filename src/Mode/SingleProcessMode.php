@@ -26,20 +26,8 @@ use Razeor\Config;
  * A running mode that only using single-process to handle tasks
  * @package Razeor\Mode
  */
-class SingleProcessMode extends AbstractMode
+class SingleProcessMode extends MultiTaskMode
 {
-    private $waitTime;
-
-    public function __construct()
-    {
-        parent::__construct();
-        if ( Config::getInstance()->has( 'CheckIntervalTime' ) ) {
-            $this->waitTime = Config::getInstance()->get( 'CheckIntervalTime' );
-        } else {
-            $this->waitTime = 30;
-        }
-    }
-
     public function run()
     {
         $runQueue = [];
@@ -91,10 +79,5 @@ class SingleProcessMode extends AbstractMode
             }
             # @}
         }
-    }
-
-    private function syncTaskList()
-    {
-        $this->taskManager->syncTaskList();
     }
 }

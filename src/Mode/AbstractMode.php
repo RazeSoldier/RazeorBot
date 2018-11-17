@@ -36,6 +36,5 @@ abstract class AbstractMode implements IMode
     public function __construct()
     {
         $this->taskManager = TaskManager::getInstance();
-        // TODO
     }
 }

@@ -18,16 +18,33 @@
  * @copyright
  */
 
-namespace Razeor;
+namespace Razeor\Mode;
 
-class ExceptionHandler
+use Razeor\Config;
+
+/**
+ * This is an abstract class as the parent class of run multi task classes
+ * @package Razeor\Mode
+ */
+abstract class MultiTaskMode extends AbstractMode
 {
     /**
-     * @param $ex \Throwable
+     * @var int
      */
-    public static function handle( \Throwable $ex )
+    protected $waitTime;
+
+    public function __construct()
     {
-        Logger::getInstance()->error( "{$ex->getMessage()} in {$ex->getFile()} on line {$ex->getLine()}" );
-        die( 1 );
+        parent::__construct();
+        if ( Config::getInstance()->has( 'CheckIntervalTime' ) ) {
+            $this->waitTime = Config::getInstance()->get( 'CheckIntervalTime' );
+        } else {
+            $this->waitTime = 30;
+        }
+    }
+
+    protected function syncTaskList()
+    {
+        $this->taskManager->syncTaskList();
     }
 }
