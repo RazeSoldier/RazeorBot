@@ -21,25 +21,17 @@
 namespace Razeor\Mode;
 
 use Razeor\{
-    Config,
-    Logger
+    Logger,
 };
 use Jenner\SimpleFork\Process;
 
-class MultiProcessMode extends AbstractMode
+class MultiProcessMode extends MultiTaskMode
 {
-    private $waitTime;
-
     private $runningTask = [];
 
     public function __construct()
     {
         parent::__construct();
-        if ( Config::getInstance()->has( 'CheckIntervalTime' ) ) {
-            $this->waitTime = Config::getInstance()->get( 'CheckIntervalTime' );
-        } else {
-            $this->waitTime = 30;
-        }
         pcntl_signal( SIGCHLD, [ $this, 'childHandler' ] );
     }
 
@@ -80,11 +72,6 @@ class MultiProcessMode extends AbstractMode
             }
             # @}
         }
-    }
-
-    private function syncTaskList()
-    {
-        $this->taskManager->syncTaskList();
     }
 
     private function runTask(string $taskName)

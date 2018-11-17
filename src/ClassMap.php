@@ -36,6 +36,7 @@ return [
     'Mode\ModeFactory' => 'Mode/ModeFactory',
     'Mode\MultiProcessMode' => 'Mode/MultiProcessMode',
     'Mode\SingleProcessMode' => 'Mode/SingleProcessMode',
+    'Mode\MultiTaskMode' => 'Mode/MultiTaskMode',
     'ShellOutput' => 'ShellOutput',
     'Task\Task' => 'Task/Task',
     'Task\TaskList' => 'Task/TaskList',

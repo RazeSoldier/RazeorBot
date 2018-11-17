@@ -20,21 +20,31 @@
 
 namespace Razeor\Mode;
 
-use Razeor\Task\TaskManager;
+use Razeor\Config;
 
 /**
- * All Mode concrete classes must extend this abstract class
+ * This is an abstract class as the parent class of run multi task classes
  * @package Razeor\Mode
  */
-abstract class AbstractMode implements IMode
+abstract class MultiTaskMode extends AbstractMode
 {
     /**
-     * @var TaskManager
+     * @var int
      */
-    protected $taskManager;
+    protected $waitTime;
 
     public function __construct()
     {
-        $this->taskManager = TaskManager::getInstance();
+        parent::__construct();
+        if ( Config::getInstance()->has( 'CheckIntervalTime' ) ) {
+            $this->waitTime = Config::getInstance()->get( 'CheckIntervalTime' );
+        } else {
+            $this->waitTime = 30;
+        }
+    }
+
+    protected function syncTaskList()
+    {
+        $this->taskManager->syncTaskList();
     }
 }
