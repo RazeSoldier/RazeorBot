@@ -20,11 +20,94 @@
 
 namespace Razeor\Mode;
 
+use Razeor\{
+    Config,
+    Logger
+};
+use Jenner\SimpleFork\Process;
+
 class MultiProcessMode extends AbstractMode
 {
-    // TODO
+    private $waitTime;
+
+    private $runningTask = [];
+
+    public function __construct()
+    {
+        parent::__construct();
+        if ( Config::getInstance()->has( 'CheckIntervalTime' ) ) {
+            $this->waitTime = Config::getInstance()->get( 'CheckIntervalTime' );
+        } else {
+            $this->waitTime = 30;
+        }
+        pcntl_signal( SIGCHLD, [ $this, 'childHandler' ] );
+    }
+
     public function run()
     {
-        // TODO: Implement run() method.
+        $runQueue = [];
+        while ( true ) {
+            pcntl_signal_dispatch();
+            $this->syncTaskList();
+            $currentTime = microtime( true );
+            $upcomingTask = $this->taskManager->getUpcomingTasks( $currentTime, $this->waitTime );
+
+            if ( $upcomingTask === null && $runQueue === [] ) {
+                sleep( $this->waitTime );
+                continue;
+            }
+
+            // First, determine if there is a conflicting task
+            if ( count( $conflictTask = array_keys( $upcomingTask, current( $upcomingTask ) ) ) >= 2 ) {
+                unset( $conflictTask[array_search(key($upcomingTask), $conflictTask)] );
+                // All conflicting tasks will be placed at the beginning of the queue
+                foreach ( $conflictTask as $task ) {
+                    array_unshift( $runQueue, $task );
+                }
+            }
+
+            time_sleep_until( current( $upcomingTask ) );
+
+            // Run upcoming task
+            //$this->taskManager->runTask( key( $upcomingTask ) );
+            $this->runTask( key( $upcomingTask ) );
+
+            # Process the tasks in the queue @{
+            if ( $runQueue !== [] ) {
+                foreach ( $runQueue as $taskName ) {
+                    $this->runTask( $taskName );
+                }
+            }
+            # @}
+        }
+    }
+
+    private function syncTaskList()
+    {
+        $this->taskManager->syncTaskList();
+    }
+
+    private function runTask(string $taskName)
+    {
+        $pro = new Process( function () use ( $taskName ) {
+            define( 'IS_CHILD', true );
+            $this->taskManager->runTask( $taskName );
+        } );
+        $pro->start();
+        $this->runningTask[$taskName] = $pro->getPid();
+    }
+
+    private function childHandler(int $signo)
+    {
+        switch ( $signo ) {
+            case SIGCHLD:
+                $pid = pcntl_wait( $status );
+                $taskName = array_search( $pid, $this->runningTask );
+                if ( $status === 0 ) {
+                    Logger::getInstance()->notice( "$taskName process successful exit" );
+                } else {
+                    Logger::getInstance()->warning( "$taskName process fail exit, exit code: $status" );
+                }
+        }
     }
 }

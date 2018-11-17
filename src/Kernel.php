@@ -43,6 +43,8 @@ class Kernel
 
     public function __destruct()
     {
-        Logger::getInstance()->notice( 'Razeor stop' );
+        if ( !defined( 'IS_CHILD' ) ) {
+            Logger::getInstance()->notice( 'Razeor stop' );
+        }
     }
 }

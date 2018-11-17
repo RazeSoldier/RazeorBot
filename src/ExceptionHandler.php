@@ -28,5 +28,6 @@ class ExceptionHandler
     public static function handle( \Throwable $ex )
     {
         Logger::getInstance()->error( "{$ex->getMessage()} in {$ex->getFile()} on line {$ex->getLine()}" );
+        die( 1 );
     }
 }

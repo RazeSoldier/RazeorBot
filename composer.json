@@ -4,7 +4,8 @@
     "php-di/php-di": "6.0.5",
     "ext-json": "*",
     "monolog/monolog": "1.24.0",
-    "jenner/simple_fork": "1.2.2"
+    "jenner/simple_fork": "1.2.2",
+    "ext-pcntl": "*"
   },
   "require-dev": {
     "phpunit/phpunit": "^7"
