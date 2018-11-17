@@ -32,7 +32,7 @@ class Kernel
 
     public function __construct()
     {
-        Logger::getInstance()->notice( 'Razeor started, mode: ' . Config::getInstance()->get( 'RunningMode' ) );
+        Logger::getInstance()->notice( 'Razeor started' );
         $this->mode = RazeorService::getInstance()->get( 'Mode' );
     }
 

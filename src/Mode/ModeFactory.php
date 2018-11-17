@@ -23,6 +23,7 @@ namespace Razeor\Mode;
 use Razeor\{
     Config,
     IFactory,
+    Logger,
     ShellOutput
 };
 
@@ -39,18 +40,24 @@ class ModeFactory implements IFactory
         $mode = Config::getInstance()->get( self::CONFIG_KEY );
         switch ( $mode ) {
             case 'single':
-                return new SingleProcessMode();
+                $modeObj =  new SingleProcessMode();
+                break;
             case 'multi':
                 if ( extension_loaded( 'pcntl' ) ) {
-                    return new MultiProcessMode();
+                    $modeObj = new MultiProcessMode();
+                    break;
                 }
                 ShellOutput::println( 'PCNTL PHP extension unavailable, so we using single-process mode instead',
                     ShellOutput::YELLOW );
-                return new SingleProcessMode();
+                $modeObj = new SingleProcessMode();
+                break;
             case 'one':
-                return new OneTaskMode();
+                $modeObj = new OneTaskMode();
+                break;
             default:
                 throw new \RuntimeException( "Unknown value: $mode" );
         }
+        Logger::getInstance()->notice( "Using $mode mode" );
+        return $modeObj;
     }
 }
