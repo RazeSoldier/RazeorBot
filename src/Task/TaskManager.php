@@ -86,8 +86,9 @@ final class TaskManager
         if ( $this->taskList->listIsEmpty() ) {
             return $upcomingTask;
         }
+        /** @var Task $taskInfo */
         foreach ( $this->taskList as $taskName => $taskInfo ) {
-            $time = $taskInfo['time'];
+            $time = $taskInfo->getTime();
             if ( $time < $currentTime ) {
                 continue;
             }

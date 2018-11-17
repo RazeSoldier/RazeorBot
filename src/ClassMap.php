@@ -37,6 +37,7 @@ return [
     'Mode\MultiProcessMode' => 'Mode/MultiProcessMode',
     'Mode\SingleProcessMode' => 'Mode/SingleProcessMode',
     'ShellOutput' => 'ShellOutput',
+    'Task\Task' => 'Task/Task',
     'Task\TaskList' => 'Task/TaskList',
     'Task\TaskManager' => 'Task/TaskManager',
 ];

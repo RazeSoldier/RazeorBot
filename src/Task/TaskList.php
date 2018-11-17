@@ -50,7 +50,7 @@ final class TaskList implements \Iterator, \Countable
     private static $instance;
 
     /**
-     * @var string[]
+     * @var Task[]
      */
     private $list = [];
 
@@ -145,10 +145,7 @@ final class TaskList implements \Iterator, \Countable
                             if ( !is_readable( $mainFilePath = "{$dir->getRealPath()}/{$json['MainClass']}.php" ) ) {
                                 throw new \RuntimeException( "Failed to read {$mainFilePath}" );
                             }
-                            $this->list[$taskName] = [
-                                'mainClass' => $json['MainClass'],
-                                'time' => $time
-                            ];
+                            $this->list[$taskName] = new Task( $taskName, $json['MainClass'], $time );
                         } else {
                             throw new \RuntimeException( 'info file missing some required option' );
                         }
@@ -166,8 +163,8 @@ final class TaskList implements \Iterator, \Countable
         } else {
             // Sort by time from small to large
             uasort( $this->list, function ( $a, $b ) {
-                $a = $a['time'];
-                $b = $b['time'];
+                $a = $a->getTime();
+                $b = $b->getTime();
                 if ( $a === $b ) {
                     return 0;
                 }
@@ -193,7 +190,7 @@ final class TaskList implements \Iterator, \Countable
     public function getMainClassFile(string $taskName) : string
     {
         if ( isset( $this->list[$taskName] ) ) {
-            return "{$this->storageDir}/$taskName/{$this->list[$taskName]['mainClass']}.php";
+            return "{$this->storageDir}/$taskName/{$this->list[$taskName]->getMainClass()}.php";
         } else {
             throw new \RuntimeException( "Undefined task: $taskName" );
         }
@@ -202,7 +199,7 @@ final class TaskList implements \Iterator, \Countable
     public function getMainClass(string $taskName) : string
     {
         if ( isset( $this->list[$taskName] ) ) {
-            return $this->list[$taskName]['mainClass'];
+            return $this->list[$taskName]->getMainClass();
         } else {
             throw new \RuntimeException( "Undefined task: $taskName" );
         }
